@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+      "target": "ES6",                // 编译输出的 JavaScript 版本，装饰器至少需要 ES6
+      "module": "commonjs",           // 使用的模块系统，Node.js 常用 commonjs，也可以用 ESNext
+      "strict": true,                 // 开启严格模式（可选）
+      "experimentalDecorators": true, // 启用实验性的装饰器支持
+      "emitDecoratorMetadata": true,  // 生成装饰器的元数据（常用于依赖注入框架，如 NestJS）
+      "outDir": "./dist",             // 编译输出的目录
+      "rootDir": "./",             // 源代码目录
+      "esModuleInterop": true,        // 支持与 ES 模块的兼容性
+      "skipLibCheck": true            // 跳过声明文件检查（可选）
+    },
+    "include": ["*.ts"],        // 包含的文件
+    "exclude": ["node_modules"]        // 排除的目录
+  }
+  
