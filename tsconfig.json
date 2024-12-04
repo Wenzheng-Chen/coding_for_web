@@ -10,7 +10,7 @@
       "esModuleInterop": true,        // 支持与 ES 模块的兼容性
       "skipLibCheck": true            // 跳过声明文件检查（可选）
     },
-    "include": ["*.ts"],        // 包含的文件
+    "include": ["*.ts", "test.js"],        // 包含的文件
     "exclude": ["node_modules"]        // 排除的目录
   }
   
