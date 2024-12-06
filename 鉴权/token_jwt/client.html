@@ -1,0 +1,73 @@
+<script>
+  let accessToken = null;
+  let refreshToken = null;
+
+  // 登录表单提交事件
+  document.getElementById("loginForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
+
+    try {
+      const response = await fetch("http://localhost:3000/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`,
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        accessToken = data.accessToken;
+        refreshToken = data.refreshToken;
+        document.getElementById("output").innerText = "Login successful!";
+        document.getElementById("protectedButton").style.display = "inline";
+      } else {
+        document.getElementById("output").innerText = data.message;
+      }
+    } catch (err) {
+      document.getElementById("output").innerText = "Error: " + err.message;
+    }
+  });
+
+  // 受保护资源按钮点击事件
+  document
+    .getElementById("protectedButton")
+    .addEventListener("click", async () => {
+      try {
+        const response = await fetch("http://localhost:3000/protected", {
+          method: "GET",
+          headers: { Authorization: `Bearer ${accessToken}` },
+        });
+
+        if (response.status === 403) {
+          // 如果Token过期，尝试刷新
+          const refreshResponse = await fetch("http://localhost:3000/refresh", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: `refreshToken=${encodeURIComponent(refreshToken)}`,
+          });
+
+          const refreshData = await refreshResponse.json();
+          if (refreshResponse.ok) {
+            accessToken = refreshData.accessToken; // 更新Access Token
+            // 重新请求受保护资源
+            return document.getElementById("protectedButton").click();
+          } else {
+            document.getElementById("output").innerText =
+              "Session expired, please log in again.";
+            return;
+          }
+        }
+
+        const data = await response.json();
+        if (response.ok) {
+          document.getElementById("output").innerText =
+            `Welcome, ${data.user}!`;
+        } else {
+          document.getElementById("output").innerText = data.message;
+        }
+      } catch (err) {
+        document.getElementById("output").innerText = "Error: " + err.message;
+      }
+    });
+</script>

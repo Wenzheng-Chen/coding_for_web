@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Session Authentication</title>
+</head>
+<body>
+  <h1>Login</h1>
+  <form id="login-form">
+    <input type="text" id="username" placeholder="Username" required />
+    <input type="password" id="password" placeholder="Password" required />
+    <button type="submit">Login</button>
+  </form>
+
+  <h1>Actions</h1>
+  <button id="get-protected">Get Protected Resource</button>
+  <button id="logout">Logout</button>
+
+  <script>
+    const apiUrl = 'http://localhost:3000';
+
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+
+      const response = await fetch(`${apiUrl}/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
+        credentials: 'include', // 确保浏览器发送和接收 cookies
+      });
+
+      const result = await response.json();
+      alert(result.message);
+    });
+
+    document.getElementById('get-protected').addEventListener('click', async () => {
+      const response = await fetch(`${apiUrl}/protected`, {
+        method: 'GET',
+        credentials: 'include', // 确保浏览器发送和接收 cookies    // Cookie sessionID=a772a7620e3438e45dfc8d7e368ff90e
+      });
+
+      const result = await response.json();
+      alert(JSON.stringify(result));
+    });
+
+    document.getElementById('logout').addEventListener('click', async () => {
+      const response = await fetch(`${apiUrl}/logout`, {
+        method: 'POST',
+        credentials: 'include',
+      });
+
+      const result = await response.json();
+      alert(result.message);
+    });
+  </script>
+</body>
+</html>

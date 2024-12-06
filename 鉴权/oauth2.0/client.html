@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OAuth 2.0 Example</title>
+</head>
+<body>
+  <h1>OAuth 2.0 Demo</h1>
+  <button id="login">Login with OAuth</button>
+  <div id="result"></div>
+  <script>
+    const clientId = "your-client-id";
+    const redirectUri = "http://localhost:3000/callback";
+    const authEndpoint = "https://authorization-server.com/oauth/authorize";
+
+    document.getElementById("login").onclick = () => {
+      const authUrl = `${authEndpoint}?response_type=code&client_id=${clientId}&redirect_uri=${encodeURIComponent(
+        redirectUri
+      )}&scope=read`;
+      window.location.href = authUrl;
+    };
+
+    // Check for authorization code in URL
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get("code");
+    if (code) {
+      fetch("http://localhost:3000/token", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code, redirectUri }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          document.getElementById("result").innerText = JSON.stringify(data, null, 2);
+        })
+        .catch((error) => {
+          console.error(error);
+          alert("Failed to fetch token");
+        });
+    }
+  </script>
+</body>
+</html>

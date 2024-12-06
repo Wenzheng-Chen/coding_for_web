@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Basic Auth Example</title>
+  </head>
+  <body>
+    <h1>Basic Auth Example</h1>
+    <button id="requestButton">Request Protected Resource</button>
+    <button id="requestButtonWithoutCred">
+      Request Protected Resource Without Credentials
+    </button>
+    <pre id="responseOutput"></pre>
+
+    <script>
+      document.getElementById("requestButton").addEventListener("click", () => {
+        const username = "admin";
+        const password = "password";
+
+        const credentials = btoa(`${username}:${password}`);
+        // btoa: 在现代浏览器中，btoa 是内置的全局函数，用于将字符串转换为 Base64 编码。
+        fetch("http://localhost:3000", {
+          method: "GET",
+          headers: {
+            Authorization: `Basic ${credentials}`,
+          },
+        })
+          .then((response) => {
+            if (response.ok) {
+              return response.text();
+            } else if (response.status === 401) {
+              throw new Error("Authentication required");
+            } else if (response === 403) {
+              throw new Error("Access denied");
+            } else {
+              throw new Error(`Unexprected error: ${response.status}`);
+            }
+          })
+          .then((data) => {
+            document.getElementById("responseOutput").textContent = data;
+          })
+          .catch((error) => {
+            document.getElementById("responseOutput").textContent =
+              error.message;
+          });
+      });
+
+      document
+        .getElementById("requestButtonWithoutCred")
+        .addEventListener("click", () => {
+          // btoa: 在现代浏览器中，btoa 是内置的全局函数，用于将字符串转换为 Base64 编码。
+          fetch("http://localhost:3000", {
+            method: "GET",
+            credentials: "include",
+          })
+            .then((response) => {
+              if (response.ok) {
+                return response.text();
+              } else if (response.status === 401) {
+                throw new Error("Authentication required");
+              } else if (response === 403) {
+                throw new Error("Access denied");
+              } else {
+                throw new Error(`Unexprected error: ${response.status}`);
+              }
+            })
+            .then((data) => {
+              document.getElementById("responseOutput").textContent = data;
+            })
+            .catch((error) => {
+              document.getElementById("responseOutput").textContent =
+                error.message;
+            });
+        });
+    </script>
+  </body>
+</html>
